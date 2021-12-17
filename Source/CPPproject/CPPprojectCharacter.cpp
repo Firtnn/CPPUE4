@@ -34,6 +34,7 @@ ACPPprojectCharacter::ACPPprojectCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
+	
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -50,7 +51,7 @@ ACPPprojectCharacter::ACPPprojectCharacter()
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
 	HoldingComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HoldingComponent"));
-	HoldingComponent->SetRelativeLocation(FVector(100.0f, 0.0f, 0.0f));
+	HoldingComponent->SetRelativeLocation(FVector(130.0f, 0.0f, 0.0f));
 	//HoldingComponent->SetupAttachement();
 
 	CurrentItem = NULL;
@@ -77,6 +78,7 @@ void ACPPprojectCharacter::SetupPlayerInputComponent(class UInputComponent* Play
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACPPprojectCharacter::MoveRight);
 
 	PlayerInputComponent->BindAction("Action", IE_Pressed, this, &ACPPprojectCharacter::OnAction);
+	PlayerInputComponent->BindAction("Action", IE_Released, this, &ACPPprojectCharacter::OnAction);
 
 	PlayerInputComponent->BindAction("Inspect", IE_Pressed, this, &ACPPprojectCharacter::OnInspect);
 	PlayerInputComponent->BindAction("Inspect", IE_Released, this, &ACPPprojectCharacter::OnInspectReleased);
@@ -100,9 +102,10 @@ void ACPPprojectCharacter::SetupPlayerInputComponent(class UInputComponent* Play
 
 void ACPPprojectCharacter::BeginPlay()
 {
-	Super::BeginPlay(); 
-
+	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	JumpMaxCount = 2; //Double saut
+	
 
 	//PitchMax = GetWorld()->GetFirstPlayerController()->PlayerCameraManager->ViewPitchMax;
 	//PitchMin = GetWorld()->GetFirstPlayerController()->PlayerCameraManager->ViewPitchMin;
@@ -112,6 +115,7 @@ void ACPPprojectCharacter::Tick(float  DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//Creation de la line pour check les collision et debogage
 	Start = HoldingComponent->GetComponentLocation();
 	ForwardVector = CameraBoom->GetForwardVector();
 	End = ((ForwardVector * 200.0f) + Start);
@@ -120,47 +124,30 @@ void ACPPprojectCharacter::Tick(float  DeltaTime)
 
 	if (!bHoldingItem)
 	{
-		//if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, DefaultComponentQueryParams, DefaultResponseParams)) // to check if we hit something
-		//{
-		//	GLog->Log("CaTouche");
-		//	if (Hit.GetActor()->GetClass()->IsChildOf(APickUp::StaticClass())) // to check if the hit is a pickupClass
-		//	{
-		//		CurrentItem = Cast<APickUp>(Hit.GetActor());
-		//	}
-		//}	
-
 		if (GetWorld()->UWorld::LineTraceSingleByObjectType(Hit, Start, End, DefaultComponentQueryParams, DefaultResponseParams)) // to check if we hit something
 		{
 			if (Hit.GetActor()->GetClass()->IsChildOf(APickUp::StaticClass())) // to check if the hit is a pickupClass
 			{
-				//GLog->Log("OH OUI");
+				GLog->Log("OH");
 				CurrentItem = Cast<APickUp>(Hit.GetActor());
-	
+				Tuvalacherceptndobjet = false;
 			}
 		}
+	
 	}
 	else 
 	{
 		CurrentItem = NULL;
 	}
 
-	if (bInspecting)
+
+	if (bHoldingItem) 
 	{
-		if (bHoldingItem)
-		{
-			//JSP COMMENT FAIRE AVEC UN THIRDPERSON Je marque quand meme ce qu'il fait dans le tuto en commentaire
-			//FirstPersonCameraComponent->SetFieldOfView(FMath::Lerp(FirstPersonCameraComponent->FieldOfView, 90.0f, 0.1f))
-			//HoldingComponent->SetRelativeLocation(FVector(0.0f, 50.0f, 50.0f));
-			CurrentItem->RotateActor();
-		}
+		HoldingComponent->SetRelativeLocation(FVector(100.0f, 0.0f, 0.0f));
+		Tuvalacherceptndobjet = true;
+
 	}
-	else 
-	{
-		if (bHoldingItem) 
-		{
-			HoldingComponent->SetRelativeLocation(FVector(100.0f, 0.0f, 0.0f));
-		}
-	}
+
 }
 
 void ACPPprojectCharacter::OnStartRun()
@@ -180,7 +167,6 @@ void ACPPprojectCharacter::SpawnObject()
 	FRotator Rot = GetActorRotation();
 	FActorSpawnParameters SpawnParams;
 
-	//GetController()->GetPlayerViewPoint(Loc, Rot);
 
 	AActor* SpawnedActorRef = GetWorld()->SpawnActor<AActor>(ActorToSpawn, Loc, Rot, SpawnParams);
 
@@ -222,6 +208,7 @@ void ACPPprojectCharacter::LookUpAtRate(float Rate)
 
 void ACPPprojectCharacter::MoveForward(float Value)
 {
+	HoldingComponent->SetRelativeLocation(FVector(130.0f, 0.0f, 0.0f));
 	if ((Controller != nullptr) && (Value != 0.0f))
 	{
 		// find out which way is forward
@@ -251,7 +238,7 @@ void ACPPprojectCharacter::MoveRight(float Value)
 
 void ACPPprojectCharacter::OnAction() 
 {
-	if (CurrentItem && !bInspecting) 
+	if (CurrentItem) 
 	{
 		ToggleItemPickup();
 	}
@@ -284,15 +271,32 @@ void ACPPprojectCharacter::OnInspectReleased()
 
 void ACPPprojectCharacter::ToggleItemPickup()
 {
+	//Je n'arrive 
+	bool marchepls = false;
 	if (CurrentItem) 
 	{
 		bHoldingItem = !bHoldingItem;
 		CurrentItem->PickUp();
-
+		marchepls = true;
 
 		if (!bHoldingItem) 
 		{
 			CurrentItem = NULL;
 		}
+
+	/*	if (marchepls)
+		{
+			bHoldingItem = !bHoldingItem;
+			CurrentItem->PickUp();
+			GLog->Log("jesuisagenouxmarchestp");
+			marchepls = false;
+
+			if (!bHoldingItem)
+			{
+				CurrentItem = NULL;
+			}
+		}*/
+			
 	}
+	
 }

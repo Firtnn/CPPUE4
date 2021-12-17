@@ -66,6 +66,10 @@ void APickUp::RotateActor()
 void APickUp::PickUp() 
 {
 	bHolding = !bHolding;
+	if (bHolding)
+		GLog->Log("true");
+	else
+		GLog->Log("false");
 	bGravity = !bGravity;
 	MyMesh->SetEnableGravity(bGravity);
 	MyMesh->SetSimulatePhysics(bHolding ? false : true); // If bHolding is true it's gonna be false and if it's false then it's false

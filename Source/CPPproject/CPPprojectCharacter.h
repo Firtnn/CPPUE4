@@ -50,9 +50,7 @@ public:
 	bool bCanMove;
 	bool bHoldingItem;
 	bool bInspecting;
-
-	float PitchMax;
-	float PitchMin;
+	bool Tuvalacherceptndobjet;
 
 	FVector HoldingComp;
 	FRotator LastRotation;
@@ -65,9 +63,6 @@ public:
 
 	const FCollisionObjectQueryParams DefaultComponentQueryParams;
 	const FCollisionQueryParams DefaultResponseParams;
-
-	//FComponentQueryParams DefaultComponentQueryParams;
-	//FCollisionResponseParams DefaultResponseParams;
 
 
 protected:
