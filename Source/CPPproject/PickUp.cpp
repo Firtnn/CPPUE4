@@ -35,9 +35,10 @@ void APickUp::BeginPlay()
 	{
 		for (auto& Comp : Components) 
 		{
-			if (Comp->GetName() == "Holding Components") 
+			if (Comp->GetName() == "HoldingComponent") 
 			{
 				HoldingComp = Cast<USceneComponent>(Comp);
+
 			}
 		}
 	}
@@ -50,7 +51,9 @@ void APickUp::Tick(float DeltaTime)
 
 	if (bHolding && HoldingComp) 
 	{
-		SetActorLocationAndRotation(HoldingComp->GetComponentLocation(), HoldingComp->GetComponentRotation());
+		//SetActorLocationAndRotation(HoldingComp->GetComponentLocation(), HoldingComp->GetComponentRotation());
+		SetActorLocation(HoldingComp->GetComponentLocation());
+		
 	}
 }
 

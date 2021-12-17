@@ -1,5 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+#include "Engine/World.h"
 #include "CPPprojectCharacter.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
@@ -9,6 +10,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "DrawDebugHelpers.h"
+
 
 //////////////////////////////////////////////////////////////////////////
 // ACPPprojectCharacter
@@ -118,13 +120,24 @@ void ACPPprojectCharacter::Tick(float  DeltaTime)
 
 	if (!bHoldingItem)
 	{
-		if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, DefaultComponentQueryParams, DefaultResponseParams)) // to check if we hit something
+		//if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, DefaultComponentQueryParams, DefaultResponseParams)) // to check if we hit something
+		//{
+		//	GLog->Log("CaTouche");
+		//	if (Hit.GetActor()->GetClass()->IsChildOf(APickUp::StaticClass())) // to check if the hit is a pickupClass
+		//	{
+		//		CurrentItem = Cast<APickUp>(Hit.GetActor());
+		//	}
+		//}	
+
+		if (GetWorld()->UWorld::LineTraceSingleByObjectType(Hit, Start, End, DefaultComponentQueryParams, DefaultResponseParams)) // to check if we hit something
 		{
 			if (Hit.GetActor()->GetClass()->IsChildOf(APickUp::StaticClass())) // to check if the hit is a pickupClass
 			{
+				//GLog->Log("OH OUI");
 				CurrentItem = Cast<APickUp>(Hit.GetActor());
+	
 			}
-		}	
+		}
 	}
 	else 
 	{

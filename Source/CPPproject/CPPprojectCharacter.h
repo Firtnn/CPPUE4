@@ -63,8 +63,11 @@ public:
 
 	FHitResult Hit;
 
-	FComponentQueryParams DefaultComponentQueryParams;
-	FCollisionResponseParams DefaultResponseParams;
+	const FCollisionObjectQueryParams DefaultComponentQueryParams;
+	const FCollisionQueryParams DefaultResponseParams;
+
+	//FComponentQueryParams DefaultComponentQueryParams;
+	//FCollisionResponseParams DefaultResponseParams;
 
 
 protected:
@@ -116,7 +119,7 @@ protected:
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
-	void ToggleMovement();
+
 	void ToggleItemPickup();
 
 protected:

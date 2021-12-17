@@ -2,6 +2,8 @@
 
 
 #include "Health.h"
+#include "GameFramework/GameModeBase.h"
+
 
 // Sets default values for this component's properties
 UHealth::UHealth()
@@ -39,6 +41,7 @@ void UHealth::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* 
 	if (Health <= 0)
 	{
 		DamagedActor->AActor::Destroy(false, true);
+		GetWorld()->GetAuthGameMode()->RestartPlayer(GetWorld()->GetFirstPlayerController());
 	}
 	
 	Health = FMath::Clamp(Health - Damage, 0.0f, DefaultHealth);
