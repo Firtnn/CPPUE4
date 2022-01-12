@@ -69,6 +69,8 @@ void ACPPprojectCharacter::SetupPlayerInputComponent(class UInputComponent* Play
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
+	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ACPPprojectCharacter::Crouching);
+
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &ACPPprojectCharacter::SpawnObject);
 
 	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ACPPprojectCharacter::OnStartRun);
@@ -171,6 +173,11 @@ void ACPPprojectCharacter::SpawnObject()
 	AActor* SpawnedActorRef = GetWorld()->SpawnActor<AActor>(ActorToSpawn, Loc, Rot, SpawnParams);
 
 
+}
+
+void ACPPprojectCharacter::Crouching()
+{
+	bCrouch = !bCrouch;
 }
 
 void ACPPprojectCharacter::OnResetVR()

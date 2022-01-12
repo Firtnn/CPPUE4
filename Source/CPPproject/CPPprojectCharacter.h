@@ -52,6 +52,9 @@ public:
 	bool bInspecting;
 	bool Tuvalacherceptndobjet;
 
+	UPROPERTY(EditAnywhere)
+	bool bCrouch = false;
+
 	FVector HoldingComp;
 	FRotator LastRotation;
 
@@ -86,6 +89,8 @@ protected:
 	UFUNCTION()
 	void SpawnObject();
 
+	UFUNCTION()
+	void Crouching();
 
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();
